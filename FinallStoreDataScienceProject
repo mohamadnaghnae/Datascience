@@ -1,1 +1,2230 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.10.13","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceId":6764170,"sourceType":"datasetVersion","datasetId":3887287}],"dockerImageVersionId":30698,"isInternetEnabled":false,"language":"python","sourceType":"notebook","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"markdown","source":"# Final Challenge: Dive into Data Science with Python  \n\nHere's a practical project to evaluate your skills in Python programming, data manipulation with Pandas, data visualization with Matplotlib and Seaborn, and basic data analysis. The project is divided into multiple sections and includes questions of increasing complexity.  \n\n> *The optional advanced sections and bonus challenges can be used to challenge more advanced students.*\n\n\n#### Section 1: Data Loading and Exploration\n\n1. Load the \"Stores.csv\" dataset using Pandas.  \n (Find this dataset in [Dayche kaggle's profile](https://www.kaggle.com/datasets/rouzbeh/stores-dataset))  \n \n2. Check data types for all features.  \n\n3. Display the first few rows of the dataset to get an overview.  \n  \n4. Describe the basic statistics of all qualitative an quantitative columns.  \n\nWrite your interpretation of the obtained outputs in terms of analysis and preparation actions.\n","metadata":{}},{"cell_type":"markdown","source":"بخش ۱: بارگذاری و کاوش داده‌ها\n\n1.مجموعه داده‌ی \"Stores.csv\" را با استفاده از پنداز بارگذاری کنید. (این مجموعه داده را در پروفایل دایکه در کگل پیدا کنید)\n\n2.نوع داده‌ها را برای تمام ویژگی‌ها بررسی کنید.\n\n3.چند ردیف اول مجموعه داده را نمایش دهید تا نمای کلی از آن بدست آورید.\n\n4.آمارهای پایه‌ی تمام ستون‌های کیفی و کمی را توصیف کنید.\n\nتفسیر خود از خروجی‌های به دست آمده را در مورد تجزیه و تحلیل و اقدامات آماده‌سازی بنویسی","metadata":{}},{"cell_type":"code","source":"import pandas as pd\n\ndf = pd.read_csv('/kaggle/input/stores-dataset/Stores.csv')\n\n#  بررسی نوع و اطلاعاتی در مورد داده ها\nprint(\"برسی نوع و اطلاعات در مورد داده ها\")\nprint(df.info())\n\n#نماش چند ردیف اول داده ها \nprint('نمایش چند ردیف اول  داده ها')\nprint(df.head())\n\n# آمارهای پایه‌ی تمام ستون‌ها\nprint(\"امار های پایه تمام ستون ها\")\nprint(df.describe())","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:38.972752Z","iopub.execute_input":"2025-05-02T06:02:38.973080Z","iopub.status.idle":"2025-05-02T06:02:40.063087Z","shell.execute_reply.started":"2025-05-02T06:02:38.973053Z","shell.execute_reply":"2025-05-02T06:02:40.061776Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"اقدامات پیشنهادی¶\nتبدیل ستون Store Number به نوع int16\n\nتبدیل ستون‌های AreaStore و Checkout Number به نوع بهینه‌تر:\n\nچون این اعداد دارای ارزش‌های اعشاری هستند، می‌توانیم نوع float32 را استفاده کنیم.\n\nبدیل ستون‌های رشته‌ای (object) به دسته‌ای (category):\nاین کار باعث کاهش حجم حافظه مصرفی و بهبود عملکرد می‌شود.\n\nمدیریت مقادیر گم شده: برای ستون Checkout Number که مقادیر گم شده داره، می‌تونیم از روش‌های مختلفی مثل پر کردن با میانگین، میانه، یا حذف ردیف‌ها استفاده کنیم.\n\nتبدیل ستون Revenue به نوع عددی.","metadata":{}},{"cell_type":"markdown","source":"#### Section 2: Data Cleaning and Transformation  \n\n5. Convert the \"Revenue\" column to a numeric data type.\n\n6. Create a new column \"RevToArea\" based on the ratio between \"Revenue\" column and \"AreaStore\" column.\n\n7. Set \"Store Number\" column as a lable of rows in data frame.  \n\n8. Check for missing values in the dataset and use an **if-else statement** to handle them by filling in the missing values with Median/Mode values of features.","metadata":{}},{"cell_type":"code","source":"# تبدیل ستون Store Number به int16\ndf['Store Number'] = df['Store Number'].astype('int16')\n\n# تبدیل ستون‌های AreaStore و Checkout Number به float32\ndf['AreaStore'] = df['AreaStore'].astype('float32')\ndf['Checkout Number'] = df['Checkout Number'].astype('float32')\n\n# تبدیل ستون‌های Property, Type, Old/New به category\ndf['Property'] = df['Property'].astype('category')\ndf['Type'] = df['Type'].astype('category')\ndf['Old/New'] = df['Old/New'].astype('category')\ndf","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.065396Z","iopub.execute_input":"2025-05-02T06:02:40.065804Z","iopub.status.idle":"2025-05-02T06:02:40.099030Z","shell.execute_reply.started":"2025-05-02T06:02:40.065752Z","shell.execute_reply":"2025-05-02T06:02:40.097932Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"📋 چه سوالات تحلیلی میشه از این جدول پرسید؟\nآیا فروشگاه‌های بزرگ‌تر درآمد بیشتری دارند؟\n\n* آیا فروشگاه‌های Owned نسبت به Rental درآمد بیشتری دارن؟\n\n* فروشگاه‌های \"New\" بهتر کار می‌کنند یا \"Old\"؟\n\n* نسبت درآمد به تعداد صندوق چقدره؟\n\n* مدل پیش‌بینی درآمد فروشگاه چطور میتونه باشه؟","metadata":{}},{"cell_type":"code","source":"# حذف کاما و تبدیل به عددی\ndf['Revenue'] = df['Revenue'].str.replace(',', '').astype(float)\n# ستون درامد را به یک ستون عددی تبدیل می کنه\ndf['Revenue'] = pd.to_numeric(df['Revenue'], errors='coerce')\ndf","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.100292Z","iopub.execute_input":"2025-05-02T06:02:40.100661Z","iopub.status.idle":"2025-05-02T06:02:40.120328Z","shell.execute_reply.started":"2025-05-02T06:02:40.100629Z","shell.execute_reply":"2025-05-02T06:02:40.119268Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"🎯 چرا این کار مهمه؟\n\nچون توی تحلیل داده و مخصوصاً مدلسازی (مثل رگرسیون خطی یا مدل‌های یادگیری ماشین)،\n➔ مدل‌ها فقط با مقادیر عددی کار می‌کنن.\nاگر ستون‌های عددی‌ات متن باشن، هیچ الگوریتمی نمی‌تونه درست روی اون کار کنه.","metadata":{}},{"cell_type":"markdown","source":"📊 در مورد دیتای تو:\nحالا ستون 'Revenue' آمادست که:\n\n* تحلیل آماری انجام بدی\n\n* روابط بین درآمد و سایر ویژگی‌ها رو مدل کنی\n\n* پیش‌بینی کنی که درآمد یک فروشگاه جدید چقدر میشه\n\n* یا حتی دیتای پرت (outlier) رو کشف کنی\n\n","metadata":{}},{"cell_type":"code","source":"#یک ستون جدید می سازه و نسبت  ستونRevenue وAreaStore  را بهمون رد ستون جدید نشون میده\ndf['RevToArea'] = df['Revenue'] / df['AreaStore']\ndf","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.121489Z","iopub.execute_input":"2025-05-02T06:02:40.121843Z","iopub.status.idle":"2025-05-02T06:02:40.146927Z","shell.execute_reply.started":"2025-05-02T06:02:40.121808Z","shell.execute_reply":"2025-05-02T06:02:40.145708Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"خروجی جدید شما دارای یک ستون اضافی به نام RevToArea است که نسبت درآمد هر فروشگاه به مساحت آن فروشگاه را نشان می‌دهد. این ستون به ما کمک می‌کند تا بفهمیم هر فروشگاه در ازای هر متر مربع از مساحت خود، چقدر درآمد دارد.","metadata":{}},{"cell_type":"markdown","source":"RevToArea: نسبت درآمد به مساحت است. این عدد نشان می‌دهد که هر فروشگاه به ازای هر متر مربع، چه مقدار درآمد تولید کرده است. برای مثال:\n\nفروشگاه شماره 1 با مساحت 2100 متر مربع، درآمد 45,072,000 داشته و نسبت درآمد به مساحت آن 21,462.86 تومان برای هر متر مربع است .\n\nفروشگاه شماره 2 با مساحت 1290 متر مربع، درآمد 7,416,000 داشته و نسبت درآمد به مساحت آن 5,748.84 تومان برای هر متر مربع است .","metadata":{}},{"cell_type":"markdown","source":"نکات کلیدی:\n\nفروشگاه‌هایی که نسبت بالاتری از درآمد به مساحت دارند، ممکن است به دلیل وجود کالاها یا خدمات پرفروش‌تر در آن فروشگاه‌ها باشند. این فروشگاه‌ها می‌توانند فضای کمتری اشغال کرده ولی درآمد بیشتری کسب کنند.\n\n\nفروشگاه‌هایی با نسبت پایین‌تر ممکن است مساحت زیادی داشته باشند ولی به ازای هر متر مربع، درآمد کمتری داشته باشند. این می‌تواند به دلیل فضای خالی، موجودی ناکافی کالا یا مشکلات در بازاریابی باشد.\n\n\nبه طور کلی، ستون RevToArea می‌تواند به مدیران و تحلیلگران کمک کند تا عملکرد فروشگاه‌ها را با توجه به مساحت فروشگاه‌ها مقایسه کنند و مناطقی که نیاز به بهبود دارند را شناسایی کنند.","metadata":{}},{"cell_type":"code","source":"df.set_index('Store Number', inplace=True)\ndf.head()","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.149646Z","iopub.execute_input":"2025-05-02T06:02:40.150059Z","iopub.status.idle":"2025-05-02T06:02:40.168384Z","shell.execute_reply.started":"2025-05-02T06:02:40.150032Z","shell.execute_reply":"2025-05-02T06:02:40.167251Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"📌 نکات تحلیلی مهم:\nایندکس‌شدن Store Number:\n\nمقدار گمشده (NaN) در ستون Checkout Number برای فروشگاه ۳:\n\nنشان می‌دهد داده ناقص داریم. برای تحلیل دقیق‌تر باید آن را مدیریت کنیم (مثلاً با میانگین جایگزین کنیم یا حذفش کنیم).","metadata":{}},{"cell_type":"code","source":"#پر کردن مقادیر خالی این ستون با میانگین\ndf['Checkout Number'] = df['Checkout Number'].fillna(df['Checkout Number'].mean())\ndf","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.169739Z","iopub.execute_input":"2025-05-02T06:02:40.170160Z","iopub.status.idle":"2025-05-02T06:02:40.193168Z","shell.execute_reply.started":"2025-05-02T06:02:40.170122Z","shell.execute_reply":"2025-05-02T06:02:40.192075Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"1_درمان داده گمشده (Missing Value Imputation):\n\n* با جایگزینی مقدار میانگین به‌جای NaN، شما داده‌ی ناقص را به شکل عددی معتبر پر کردید\n\n* این روش نسبت به حذف کامل ردیف، بهتر است، چون داده را نگه می‌دارد","metadata":{}},{"cell_type":"markdown","source":"2_تأثیر بر تحلیل‌های آینده:\n\n* حالا که ستون کامل شده، می‌توانید تحلیل‌های آماری، گراف‌ها و مدل‌سازی را بدون خطای NaN انجام دهید.","metadata":{}},{"cell_type":"markdown","source":"#### Section 3: Data Visualization  \n\n9. Create a bar chart showing the distribution of store \"Type\" with matplotlib.\n\n10. Generate a histogram of store \"Revenue\" with seaborn.","metadata":{}},{"cell_type":"markdown","source":"بخش 3: تجسم داده ها\n\nیک نمودار میله ای ایجاد کنید که توزیع فروشگاه \"Type\" را با matplotlib نشان می دهد.\n\nیک هیستوگرام از فروشگاه \"درآمد\" با seaborn ایجاد کنید.","metadata":{}},{"cell_type":"markdown","source":"","metadata":{}},{"cell_type":"code","source":"import matplotlib.pyplot as plt\n\n# محاسبه تعداد هر نوع فروشگاه\ntype_counts = df['Type'].value_counts()\n\n# رسم نمودار میله‌ای\nplt.figure(figsize=(8, 6))\nplt.bar(type_counts.index, type_counts.values, color='skyblue')\n\n# عنوان و برچسب‌ها\nplt.title('Distribution of types of stores (Store Type)', fontsize=14)\nplt.xlabel('Type of stores', fontsize=12)\nplt.ylabel('number', fontsize=12)\n\n# نمایش نمودار\nplt.tight_layout()\nplt.show()\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.194387Z","iopub.execute_input":"2025-05-02T06:02:40.194656Z","iopub.status.idle":"2025-05-02T06:02:40.546037Z","shell.execute_reply.started":"2025-05-02T06:02:40.194634Z","shell.execute_reply":"2025-05-02T06:02:40.544802Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"این نمودار نشان می‌دهد که:\n\nفروشگاه‌های Express بیشترین تعداد را دارند.\n\nفروشگاه‌های Extra در رتبه دوم قرار دارند.\n\nفروشگاه‌های Hyper کمترین تعداد را دارند.","metadata":{}},{"cell_type":"code","source":"import seaborn as sns\nimport matplotlib.pyplot as plt\n\n# رسم هیستوگرام درآمد فروشگاه‌ها\nplt.figure(figsize=(10, 6))\nsns.histplot(data=df, x='Revenue', bins=20, kde=True, color='green')\n\n# عنوان و برچسب‌ها\nplt.title('Distribution of store income (Revenue)', fontsize=14)\nplt.xlabel('income', fontsize=12)\nplt.ylabel('Number of stores', fontsize=12)\n\n# نمایش نمودار\nplt.tight_layout()\nplt.show()\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:40.547441Z","iopub.execute_input":"2025-05-02T06:02:40.547748Z","iopub.status.idle":"2025-05-02T06:02:42.025025Z","shell.execute_reply.started":"2025-05-02T06:02:40.547723Z","shell.execute_reply":"2025-05-02T06:02:42.023932Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"* عنوان: توزیع درآمد فروشگاه‌ها\n\n* محور X: درآمد (Revenue)\n\n* محور Y: فراوانی (Frequency)\n\n* هیستوگرام: بیشتر فروشگاه‌ها دارای درآمد پایین‌تری هستند، و فراوانی با افزایش درآمد کاهش می‌یابد.\n\n* توزیع skewed راست: نشان می‌دهد که تعداد کمی از فروشگاه‌ها دارای درآمد بسیار بالایی هستند.","metadata":{}},{"cell_type":"markdown","source":"#### Section 4: Data Analysis  \n\n12. Compare \"AreaStore\" values for \"Store Numbers\" 5 and 117, and print which one is greater than. *(hint: uisng .loc)*\n\n13. Write a **function** to get \"Store Numbers\" and numeric features name, then compare values and print which one is greater than.\n\n15. Determine the most common \"Property\" type among the stores.   \n\n14. Identify the store with the highest \"Revenue\" per square meter of \"AreaStore\".  \n\n16. Write a **function** to find and return the top N stores with the highest \"Revenue\" in number K stores. Allow the user to specify the number N and K as an argument. (N <= K)\n","metadata":{}},{"cell_type":"code","source":"# مقایسه مقادیر AreaStore برای Store Numbers 5 و 117\n\narea_store_5 = df.loc[5, 'AreaStore']\narea_store_117 = df.loc[117, 'AreaStore']\n\nif area_store_5 > area_store_117:\n    print('Store Number 5 has a greater AreaStore:', area_store_5)\nelse:\n    print('Store Number 117 has a greater AreaStore:', area_store_117)\n\nprint(50 * \"=\")","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:03:51.820840Z","iopub.execute_input":"2025-05-02T06:03:51.821204Z","iopub.status.idle":"2025-05-02T06:03:51.827518Z","shell.execute_reply.started":"2025-05-02T06:03:51.821180Z","shell.execute_reply":"2025-05-02T06:03:51.826471Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"def compare_numeric_feature(df, store_num1, store_num2, feature_name):\n    try:\n        # دریافت مقدار ویژگی برای هر فروشگاه\n        value1 = df.loc[store_num1, feature_name]\n        value2 = df.loc[store_num2, feature_name]\n        \n        # چاپ مقدار هر فروشگاه\n        print(f\"amount '{feature_name}' for the store {store_num1}: {value1}\")\n        print(f\"amount '{feature_name}' for the store {store_num2}: {value2}\")\n        \n        # مقایسه مقادیر\n        if value1 > value2:\n            print(f\"➔ store {store_num1} Much more in the feature '{feature_name}' has.\")\n        elif value1 < value2:\n            print(f\"➔ store {store_num2} Much more in the feature '{feature_name}' has.\")\n        else:\n            print(f\"➔ attribute value '{feature_name}' It is the same in both stores..\")\n    \n    except KeyError as e:\n        print(f\"Error: The entered column or store number does not exist! ({e})\")\n\n\ncompare_numeric_feature(df, 5, 117, 'AreaStore')\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.036686Z","iopub.execute_input":"2025-05-02T06:02:42.037096Z","iopub.status.idle":"2025-05-02T06:02:42.052118Z","shell.execute_reply.started":"2025-05-02T06:02:42.037069Z","shell.execute_reply":"2025-05-02T06:02:42.051009Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"# شمارش تعداد هر نوع Property\nproperty_counts = df['Property'].value_counts()\n\n# استخراج رایج‌ترین نوع\nmost_common_property = property_counts.idxmax()\nmost_common_count = property_counts.max()\n\nprint(f\"The most common type of property among stores: {most_common_property} with the number {most_common_count} store\")\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.053629Z","iopub.execute_input":"2025-05-02T06:02:42.054020Z","iopub.status.idle":"2025-05-02T06:02:42.070853Z","shell.execute_reply.started":"2025-05-02T06:02:42.053985Z","shell.execute_reply":"2025-05-02T06:02:42.069678Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"# محاسبه نسبت درآمد به مساحت برای هر فروشگاه\ndf['RevenuePerArea'] = df['Revenue'] / df['AreaStore']\n\n# پیدا کردن ایندکس فروشگاهی که بیشترین مقدار را دارد\nstore_with_highest_revenue_per_area = df['RevenuePerArea'].idxmax()\n\n# استخراج شماره فروشگاه از ایندکس\nstore_number = store_with_highest_revenue_per_area\n\n# استخراج مقدار بیشترین درآمد به ازای مساحت\nhighest_revenue_per_area = df.loc[store_number, 'RevenuePerArea']\n\nprint(f\"Store number {store_number} The highest income per square meter of 'AreaStore' with the amount {highest_revenue_per_area:.2f} has.\")\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.072414Z","iopub.execute_input":"2025-05-02T06:02:42.072754Z","iopub.status.idle":"2025-05-02T06:02:42.088449Z","shell.execute_reply.started":"2025-05-02T06:02:42.072710Z","shell.execute_reply":"2025-05-02T06:02:42.087283Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"import pandas as pd\n\ndef top_n_stores_by_revenue(df, N, K):\n    \"\"\"\n    Function to find and return the top N stores with the highest 'Revenue' \n    from the top K stores.\n    \n    Parameters:\n    - df: DataFrame containing the stores data.\n    - N: The number of top stores to return (N <= K).\n    - K: The number of stores to consider (K can be more than or equal to N).\n    \n    Returns:\n    - A DataFrame containing the top N stores with the highest 'Revenue'.\n    \"\"\"\n    \n    if N > K:\n        raise ValueError(\"N must be less than or equal to K.\")\n    \n    # Select the top K stores based on 'Revenue'\n    top_k_stores = df.nlargest(K, 'Revenue')\n    \n    # Get the top N stores from the top K stores\n    top_n_stores = top_k_stores.head(N)\n    \n    return top_n_stores\n\n# Example of usage\n# Assuming df is your DataFrame\nN = 5  # The number of top stores you want to return\nK = 10  # The number of stores to consider\ntop_stores = top_n_stores_by_revenue(df, N, K)\nprint(top_stores)\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.089756Z","iopub.execute_input":"2025-05-02T06:02:42.090116Z","iopub.status.idle":"2025-05-02T06:02:42.116282Z","shell.execute_reply.started":"2025-05-02T06:02:42.090091Z","shell.execute_reply":"2025-05-02T06:02:42.115144Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"#### Section 5: Bonus Challenge (Advanced) --Optional \n\n17. Use Scikit-Learn to perform test and trian split dataset.  \n\n18. Use Scikit-Learn to resclale numerical data for modeling. \n\n19. Use Scikit-Learn to perform linear regression to predict store \"Revenue\", based on **numerical features**.  \n\n20. Use Scikit-Learn to evaluate model with **R square** metric.","metadata":{}},{"cell_type":"code","source":"from sklearn.model_selection import train_test_split\n\n# فرض می‌کنیم df دیتافریم شماست\n\n# تقسیم ویژگی‌ها (X) و برچسب‌ها (y)\n# به عنوان مثال فرض کنیم می‌خواهیم 'Revenue' را پیش‌بینی کنیم\nX = df.drop(columns=['Revenue'])  # همه ستون‌ها به جز Revenue ویژگی‌ها هستند\ny = df['Revenue']                 # ستون Revenue برچسب ماست\n\n# تقسیم داده‌ها به داده‌های آموزش و تست\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n\n# نمایش شکل داده‌ها\nprint(\"شکل X_train:\", X_train.shape)\nprint(\"شکل X_test:\", X_test.shape)\nprint(\"شکل y_train:\", y_train.shape)\nprint(\"شکل y_test:\", y_test.shape)\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.119295Z","iopub.execute_input":"2025-05-02T06:02:42.119622Z","iopub.status.idle":"2025-05-02T06:02:42.318712Z","shell.execute_reply.started":"2025-05-02T06:02:42.119593Z","shell.execute_reply":"2025-05-02T06:02:42.317691Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"from sklearn.preprocessing import StandardScaler\n\n# فرض می‌کنیم X همان ویژگی‌های عددی ماست\n# اگر همه ستون‌های X عددی نباشند، باید فقط ستون‌های عددی را انتخاب کنیم\nnumeric_columns = X.select_dtypes(include=['float64', 'int64']).columns\n\n# ایجاد یک شی از StandardScaler\nscaler = StandardScaler()\n\n# فیت و ترنسفورم روی داده‌های آموزشی\nX_train_scaled = X_train.copy()\nX_train_scaled[numeric_columns] = scaler.fit_transform(X_train[numeric_columns])\n\n# فقط ترنسفورم روی داده‌های تست (بدون فیت مجدد)\nX_test_scaled = X_test.copy()\nX_test_scaled[numeric_columns] = scaler.transform(X_test[numeric_columns])\n\n# مشاهده خروجی\nprint(X_train_scaled.head())\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.320194Z","iopub.execute_input":"2025-05-02T06:02:42.320879Z","iopub.status.idle":"2025-05-02T06:02:42.340911Z","shell.execute_reply.started":"2025-05-02T06:02:42.320841Z","shell.execute_reply":"2025-05-02T06:02:42.339870Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.preprocessing import StandardScaler\n\n# فرض می‌کنیم df دیتافریم اصلی شماست.\n\n# --- 1. انتخاب ویژگی‌های عددی\nnumerical_features = ['AreaStore', 'Checkout Number', 'RevToArea', 'RevenuePerArea']\n\nX = df[numerical_features]  # ویژگی‌ها (Features)\ny = df['Revenue']           # هدف (Target)\n\n# --- 2. تقسیم داده به داده‌های آموزش و تست\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n\n# --- 3. اعمال استانداردسازی (StandardScaler)\nscaler = StandardScaler()\nX_train_scaled = scaler.fit_transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n\n# --- 4. ساخت و آموزش مدل رگرسیون خطی\nmodel = LinearRegression()\nmodel.fit(X_train_scaled, y_train)\n\n# --- 5. پیش‌بینی روی داده‌های تست\ny_pred = model.predict(X_test_scaled)\n\n# --- 6. ارزیابی مدل (اختیاری - مثلا محاسبه R^2)\nr2_score = model.score(X_test_scaled, y_test)\nprint(f\"The model on the test data has R^2 equal to: {r2_score:.4f}\")\n","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.342249Z","iopub.execute_input":"2025-05-02T06:02:42.342614Z","iopub.status.idle":"2025-05-02T06:02:42.482435Z","shell.execute_reply.started":"2025-05-02T06:02:42.342587Z","shell.execute_reply":"2025-05-02T06:02:42.481425Z"}},"outputs":[],"execution_count":null},{"cell_type":"code","source":"from sklearn.metrics import r2_score\n\n# ارزیابی مدل با استفاده از متریک R square\nr2 = r2_score(y_test, y_pred)\nprint('R square:', r2)","metadata":{"trusted":true,"execution":{"iopub.status.busy":"2025-05-02T06:02:42.483635Z","iopub.execute_input":"2025-05-02T06:02:42.483953Z","iopub.status.idle":"2025-05-02T06:02:42.490156Z","shell.execute_reply.started":"2025-05-02T06:02:42.483929Z","shell.execute_reply":"2025-05-02T06:02:42.489105Z"}},"outputs":[],"execution_count":null},{"cell_type":"markdown","source":"# Good luck!","metadata":{}}]}
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "a05e9350",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007183,
+     "end_time": "2025-05-04T06:57:47.675092",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:47.667909",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Final Challenge: Dive into Data Science with Python  \n",
+    "\n",
+    "Here's a practical project to evaluate your skills in Python programming, data manipulation with Pandas, data visualization with Matplotlib and Seaborn, and basic data analysis. The project is divided into multiple sections and includes questions of increasing complexity.  \n",
+    "\n",
+    "> *The optional advanced sections and bonus challenges can be used to challenge more advanced students.*\n",
+    "\n",
+    "\n",
+    "#### Section 1: Data Loading and Exploration\n",
+    "\n",
+    "1. Load the \"Stores.csv\" dataset using Pandas.  \n",
+    " (Find this dataset in [Dayche kaggle's profile](https://www.kaggle.com/datasets/rouzbeh/stores-dataset))  \n",
+    " \n",
+    "2. Check data types for all features.  \n",
+    "\n",
+    "3. Display the first few rows of the dataset to get an overview.  \n",
+    "  \n",
+    "4. Describe the basic statistics of all qualitative an quantitative columns.  \n",
+    "\n",
+    "Write your interpretation of the obtained outputs in terms of analysis and preparation actions.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f8c65126",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006801,
+     "end_time": "2025-05-04T06:57:47.688970",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:47.682169",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "بخش ۱: بارگذاری و کاوش داده‌ها\n",
+    "\n",
+    "1.مجموعه داده‌ی \"Stores.csv\" را با استفاده از پنداز بارگذاری کنید. (این مجموعه داده را در پروفایل دایکه در کگل پیدا کنید)\n",
+    "\n",
+    "2.نوع داده‌ها را برای تمام ویژگی‌ها بررسی کنید.\n",
+    "\n",
+    "3.چند ردیف اول مجموعه داده را نمایش دهید تا نمای کلی از آن بدست آورید.\n",
+    "\n",
+    "4.آمارهای پایه‌ی تمام ستون‌های کیفی و کمی را توصیف کنید.\n",
+    "\n",
+    "تفسیر خود از خروجی‌های به دست آمده را در مورد تجزیه و تحلیل و اقدامات آماده‌سازی بنویسی"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "3a8b1164",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:47.705098Z",
+     "iopub.status.busy": "2025-05-04T06:57:47.704678Z",
+     "iopub.status.idle": "2025-05-04T06:57:48.806775Z",
+     "shell.execute_reply": "2025-05-04T06:57:48.805491Z"
+    },
+    "papermill": {
+     "duration": 1.113144,
+     "end_time": "2025-05-04T06:57:48.809442",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:47.696298",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "برسی نوع و اطلاعات در مورد داده ها\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 118 entries, 0 to 117\n",
+      "Data columns (total 7 columns):\n",
+      " #   Column           Non-Null Count  Dtype  \n",
+      "---  ------           --------------  -----  \n",
+      " 0   Store Number     118 non-null    int64  \n",
+      " 1   AreaStore        118 non-null    float64\n",
+      " 2   Property         118 non-null    object \n",
+      " 3   Type             118 non-null    object \n",
+      " 4   Old/New          118 non-null    object \n",
+      " 5   Checkout Number  106 non-null    float64\n",
+      " 6   Revenue          118 non-null    object \n",
+      "dtypes: float64(2), int64(1), object(4)\n",
+      "memory usage: 6.6+ KB\n",
+      "None\n",
+      "نمایش چند ردیف اول  داده ها\n",
+      "   Store Number  AreaStore   Property     Type Old/New  Checkout Number  \\\n",
+      "0             1     2100.0      Owned    Hyper     New              6.0   \n",
+      "1             2     1290.0  Cooperate    Extra     New              5.0   \n",
+      "2             3      500.0     Rental  Express     New              NaN   \n",
+      "3             4     2000.0      Owned    Hyper     New              9.0   \n",
+      "4             5      220.0     Rental  Express     Old              2.0   \n",
+      "\n",
+      "      Revenue  \n",
+      "0  45,072,000  \n",
+      "1   7,416,000  \n",
+      "2   8,592,000  \n",
+      "3  48,415,500  \n",
+      "4   3,345,500  \n",
+      "امار های پایه تمام ستون ها\n",
+      "       Store Number    AreaStore  Checkout Number\n",
+      "count    118.000000   118.000000       106.000000\n",
+      "mean      59.500000  1373.608136         4.792453\n",
+      "std       34.207699  1092.453470         2.820729\n",
+      "min        1.000000    82.000000         1.000000\n",
+      "25%       30.250000   530.500000         3.000000\n",
+      "50%       59.500000  1000.000000         4.000000\n",
+      "75%       88.750000  1887.500000         6.000000\n",
+      "max      118.000000  5600.000000        14.000000\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/stores-dataset/Stores.csv')\n",
+    "\n",
+    "#  بررسی نوع و اطلاعاتی در مورد داده ها\n",
+    "print(\"برسی نوع و اطلاعات در مورد داده ها\")\n",
+    "print(df.info())\n",
+    "\n",
+    "#نماش چند ردیف اول داده ها \n",
+    "print('نمایش چند ردیف اول  داده ها')\n",
+    "print(df.head())\n",
+    "\n",
+    "# آمارهای پایه‌ی تمام ستون‌ها\n",
+    "print(\"امار های پایه تمام ستون ها\")\n",
+    "print(df.describe())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "29773411",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00831,
+     "end_time": "2025-05-04T06:57:48.826391",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.818081",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "اقدامات پیشنهادی¶\n",
+    "تبدیل ستون Store Number به نوع int16\n",
+    "\n",
+    "تبدیل ستون‌های AreaStore و Checkout Number به نوع بهینه‌تر:\n",
+    "\n",
+    "چون این اعداد دارای ارزش‌های اعشاری هستند، می‌توانیم نوع float32 را استفاده کنیم.\n",
+    "\n",
+    "بدیل ستون‌های رشته‌ای (object) به دسته‌ای (category):\n",
+    "این کار باعث کاهش حجم حافظه مصرفی و بهبود عملکرد می‌شود.\n",
+    "\n",
+    "مدیریت مقادیر گم شده: برای ستون Checkout Number که مقادیر گم شده داره، می‌تونیم از روش‌های مختلفی مثل پر کردن با میانگین، میانه، یا حذف ردیف‌ها استفاده کنیم.\n",
+    "\n",
+    "تبدیل ستون Revenue به نوع عددی."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "213d3c53",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006864,
+     "end_time": "2025-05-04T06:57:48.840812",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.833948",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Section 2: Data Cleaning and Transformation  \n",
+    "\n",
+    "5. Convert the \"Revenue\" column to a numeric data type.\n",
+    "\n",
+    "6. Create a new column \"RevToArea\" based on the ratio between \"Revenue\" column and \"AreaStore\" column.\n",
+    "\n",
+    "7. Set \"Store Number\" column as a lable of rows in data frame.  \n",
+    "\n",
+    "8. Check for missing values in the dataset and use an **if-else statement** to handle them by filling in the missing values with Median/Mode values of features."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "e98eaf2f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:48.857162Z",
+     "iopub.status.busy": "2025-05-04T06:57:48.856826Z",
+     "iopub.status.idle": "2025-05-04T06:57:48.887240Z",
+     "shell.execute_reply": "2025-05-04T06:57:48.886102Z"
+    },
+    "papermill": {
+     "duration": 0.041742,
+     "end_time": "2025-05-04T06:57:48.889554",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.847812",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Store Number</th>\n",
+       "      <th>AreaStore</th>\n",
+       "      <th>Property</th>\n",
+       "      <th>Type</th>\n",
+       "      <th>Old/New</th>\n",
+       "      <th>Checkout Number</th>\n",
+       "      <th>Revenue</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2100.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>45,072,000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>1290.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>7,416,000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>8,592,000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>48,415,500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>220.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>3,345,500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>113</th>\n",
+       "      <td>114</td>\n",
+       "      <td>1800.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>13,471,000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>114</th>\n",
+       "      <td>115</td>\n",
+       "      <td>1700.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>29,974,500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>115</th>\n",
+       "      <td>116</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>11,031,500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>116</th>\n",
+       "      <td>117</td>\n",
+       "      <td>200.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>6,173,500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>117</th>\n",
+       "      <td>118</td>\n",
+       "      <td>420.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>10,643,000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>118 rows × 7 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     Store Number  AreaStore          Property     Type Old/New  \\\n",
+       "0               1     2100.0             Owned    Hyper     New   \n",
+       "1               2     1290.0         Cooperate    Extra     New   \n",
+       "2               3      500.0            Rental  Express     New   \n",
+       "3               4     2000.0             Owned    Hyper     New   \n",
+       "4               5      220.0            Rental  Express     Old   \n",
+       "..            ...        ...               ...      ...     ...   \n",
+       "113           114     1800.0  Rental/Cooperate    Extra     New   \n",
+       "114           115     1700.0            Owned     Extra     New   \n",
+       "115           116      500.0  Rental/Cooperate  Express     New   \n",
+       "116           117      200.0  Rental/Cooperate  Express     New   \n",
+       "117           118      420.0         Cooperate  Express    Old    \n",
+       "\n",
+       "     Checkout Number     Revenue  \n",
+       "0                6.0  45,072,000  \n",
+       "1                5.0   7,416,000  \n",
+       "2                NaN   8,592,000  \n",
+       "3                9.0  48,415,500  \n",
+       "4                2.0   3,345,500  \n",
+       "..               ...         ...  \n",
+       "113              9.0  13,471,000  \n",
+       "114              6.0  29,974,500  \n",
+       "115              2.0  11,031,500  \n",
+       "116              2.0   6,173,500  \n",
+       "117              3.0  10,643,000  \n",
+       "\n",
+       "[118 rows x 7 columns]"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# تبدیل ستون Store Number به int16\n",
+    "df['Store Number'] = df['Store Number'].astype('int16')\n",
+    "\n",
+    "# تبدیل ستون‌های AreaStore و Checkout Number به float32\n",
+    "df['AreaStore'] = df['AreaStore'].astype('float32')\n",
+    "df['Checkout Number'] = df['Checkout Number'].astype('float32')\n",
+    "\n",
+    "# تبدیل ستون‌های Property, Type, Old/New به category\n",
+    "df['Property'] = df['Property'].astype('category')\n",
+    "df['Type'] = df['Type'].astype('category')\n",
+    "df['Old/New'] = df['Old/New'].astype('category')\n",
+    "df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "facd6c07",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007385,
+     "end_time": "2025-05-04T06:57:48.905915",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.898530",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "📋 چه سوالات تحلیلی میشه از این جدول پرسید؟\n",
+    "آیا فروشگاه‌های بزرگ‌تر درآمد بیشتری دارند؟\n",
+    "\n",
+    "* آیا فروشگاه‌های Owned نسبت به Rental درآمد بیشتری دارن؟\n",
+    "\n",
+    "* فروشگاه‌های \"New\" بهتر کار می‌کنند یا \"Old\"؟\n",
+    "\n",
+    "* نسبت درآمد به تعداد صندوق چقدره؟\n",
+    "\n",
+    "* مدل پیش‌بینی درآمد فروشگاه چطور میتونه باشه؟"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "ebc4dca4",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:48.923672Z",
+     "iopub.status.busy": "2025-05-04T06:57:48.923278Z",
+     "iopub.status.idle": "2025-05-04T06:57:48.943520Z",
+     "shell.execute_reply": "2025-05-04T06:57:48.942300Z"
+    },
+    "papermill": {
+     "duration": 0.031918,
+     "end_time": "2025-05-04T06:57:48.945719",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.913801",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Store Number</th>\n",
+       "      <th>AreaStore</th>\n",
+       "      <th>Property</th>\n",
+       "      <th>Type</th>\n",
+       "      <th>Old/New</th>\n",
+       "      <th>Checkout Number</th>\n",
+       "      <th>Revenue</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2100.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>45072000.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>1290.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>7416000.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>8592000.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>48415500.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>220.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>3345500.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>113</th>\n",
+       "      <td>114</td>\n",
+       "      <td>1800.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>13471000.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>114</th>\n",
+       "      <td>115</td>\n",
+       "      <td>1700.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>29974500.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>115</th>\n",
+       "      <td>116</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>11031500.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>116</th>\n",
+       "      <td>117</td>\n",
+       "      <td>200.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>6173500.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>117</th>\n",
+       "      <td>118</td>\n",
+       "      <td>420.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>10643000.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>118 rows × 7 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     Store Number  AreaStore          Property     Type Old/New  \\\n",
+       "0               1     2100.0             Owned    Hyper     New   \n",
+       "1               2     1290.0         Cooperate    Extra     New   \n",
+       "2               3      500.0            Rental  Express     New   \n",
+       "3               4     2000.0             Owned    Hyper     New   \n",
+       "4               5      220.0            Rental  Express     Old   \n",
+       "..            ...        ...               ...      ...     ...   \n",
+       "113           114     1800.0  Rental/Cooperate    Extra     New   \n",
+       "114           115     1700.0            Owned     Extra     New   \n",
+       "115           116      500.0  Rental/Cooperate  Express     New   \n",
+       "116           117      200.0  Rental/Cooperate  Express     New   \n",
+       "117           118      420.0         Cooperate  Express    Old    \n",
+       "\n",
+       "     Checkout Number     Revenue  \n",
+       "0                6.0  45072000.0  \n",
+       "1                5.0   7416000.0  \n",
+       "2                NaN   8592000.0  \n",
+       "3                9.0  48415500.0  \n",
+       "4                2.0   3345500.0  \n",
+       "..               ...         ...  \n",
+       "113              9.0  13471000.0  \n",
+       "114              6.0  29974500.0  \n",
+       "115              2.0  11031500.0  \n",
+       "116              2.0   6173500.0  \n",
+       "117              3.0  10643000.0  \n",
+       "\n",
+       "[118 rows x 7 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# حذف کاما و تبدیل به عددی\n",
+    "df['Revenue'] = df['Revenue'].str.replace(',', '').astype(float)\n",
+    "# ستون درامد را به یک ستون عددی تبدیل می کنه\n",
+    "df['Revenue'] = pd.to_numeric(df['Revenue'], errors='coerce')\n",
+    "df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2d5936e5",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007852,
+     "end_time": "2025-05-04T06:57:48.961568",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.953716",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "🎯 چرا این کار مهمه؟\n",
+    "\n",
+    "چون توی تحلیل داده و مخصوصاً مدلسازی (مثل رگرسیون خطی یا مدل‌های یادگیری ماشین)،\n",
+    "➔ مدل‌ها فقط با مقادیر عددی کار می‌کنن.\n",
+    "اگر ستون‌های عددی‌ات متن باشن، هیچ الگوریتمی نمی‌تونه درست روی اون کار کنه."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9a137e13",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007508,
+     "end_time": "2025-05-04T06:57:48.976861",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.969353",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "📊 در مورد دیتای تو:\n",
+    "حالا ستون 'Revenue' آمادست که:\n",
+    "\n",
+    "* تحلیل آماری انجام بدی\n",
+    "\n",
+    "* روابط بین درآمد و سایر ویژگی‌ها رو مدل کنی\n",
+    "\n",
+    "* پیش‌بینی کنی که درآمد یک فروشگاه جدید چقدر میشه\n",
+    "\n",
+    "* یا حتی دیتای پرت (outlier) رو کشف کنی\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "13b2c446",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:48.994866Z",
+     "iopub.status.busy": "2025-05-04T06:57:48.994442Z",
+     "iopub.status.idle": "2025-05-04T06:57:49.014803Z",
+     "shell.execute_reply": "2025-05-04T06:57:49.013728Z"
+    },
+    "papermill": {
+     "duration": 0.031784,
+     "end_time": "2025-05-04T06:57:49.017203",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:48.985419",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Store Number</th>\n",
+       "      <th>AreaStore</th>\n",
+       "      <th>Property</th>\n",
+       "      <th>Type</th>\n",
+       "      <th>Old/New</th>\n",
+       "      <th>Checkout Number</th>\n",
+       "      <th>Revenue</th>\n",
+       "      <th>RevToArea</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2100.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>45072000.0</td>\n",
+       "      <td>21462.857143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>1290.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>7416000.0</td>\n",
+       "      <td>5748.837209</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>8592000.0</td>\n",
+       "      <td>17184.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>48415500.0</td>\n",
+       "      <td>24207.750000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>220.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>3345500.0</td>\n",
+       "      <td>15206.818182</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>113</th>\n",
+       "      <td>114</td>\n",
+       "      <td>1800.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>13471000.0</td>\n",
+       "      <td>7483.888889</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>114</th>\n",
+       "      <td>115</td>\n",
+       "      <td>1700.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>29974500.0</td>\n",
+       "      <td>17632.058824</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>115</th>\n",
+       "      <td>116</td>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>11031500.0</td>\n",
+       "      <td>22063.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>116</th>\n",
+       "      <td>117</td>\n",
+       "      <td>200.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>6173500.0</td>\n",
+       "      <td>30867.500000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>117</th>\n",
+       "      <td>118</td>\n",
+       "      <td>420.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>10643000.0</td>\n",
+       "      <td>25340.476190</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>118 rows × 8 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     Store Number  AreaStore          Property     Type Old/New  \\\n",
+       "0               1     2100.0             Owned    Hyper     New   \n",
+       "1               2     1290.0         Cooperate    Extra     New   \n",
+       "2               3      500.0            Rental  Express     New   \n",
+       "3               4     2000.0             Owned    Hyper     New   \n",
+       "4               5      220.0            Rental  Express     Old   \n",
+       "..            ...        ...               ...      ...     ...   \n",
+       "113           114     1800.0  Rental/Cooperate    Extra     New   \n",
+       "114           115     1700.0            Owned     Extra     New   \n",
+       "115           116      500.0  Rental/Cooperate  Express     New   \n",
+       "116           117      200.0  Rental/Cooperate  Express     New   \n",
+       "117           118      420.0         Cooperate  Express    Old    \n",
+       "\n",
+       "     Checkout Number     Revenue     RevToArea  \n",
+       "0                6.0  45072000.0  21462.857143  \n",
+       "1                5.0   7416000.0   5748.837209  \n",
+       "2                NaN   8592000.0  17184.000000  \n",
+       "3                9.0  48415500.0  24207.750000  \n",
+       "4                2.0   3345500.0  15206.818182  \n",
+       "..               ...         ...           ...  \n",
+       "113              9.0  13471000.0   7483.888889  \n",
+       "114              6.0  29974500.0  17632.058824  \n",
+       "115              2.0  11031500.0  22063.000000  \n",
+       "116              2.0   6173500.0  30867.500000  \n",
+       "117              3.0  10643000.0  25340.476190  \n",
+       "\n",
+       "[118 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#یک ستون جدید می سازه و نسبت  ستونRevenue وAreaStore  را بهمون رد ستون جدید نشون میده\n",
+    "df['RevToArea'] = df['Revenue'] / df['AreaStore']\n",
+    "df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9ed49e63",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007821,
+     "end_time": "2025-05-04T06:57:49.033048",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.025227",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "خروجی جدید شما دارای یک ستون اضافی به نام RevToArea است که نسبت درآمد هر فروشگاه به مساحت آن فروشگاه را نشان می‌دهد. این ستون به ما کمک می‌کند تا بفهمیم هر فروشگاه در ازای هر متر مربع از مساحت خود، چقدر درآمد دارد."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "610583de",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007643,
+     "end_time": "2025-05-04T06:57:49.049487",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.041844",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "RevToArea: نسبت درآمد به مساحت است. این عدد نشان می‌دهد که هر فروشگاه به ازای هر متر مربع، چه مقدار درآمد تولید کرده است. برای مثال:\n",
+    "\n",
+    "فروشگاه شماره 1 با مساحت 2100 متر مربع، درآمد 45,072,000 داشته و نسبت درآمد به مساحت آن 21,462.86 تومان برای هر متر مربع است .\n",
+    "\n",
+    "فروشگاه شماره 2 با مساحت 1290 متر مربع، درآمد 7,416,000 داشته و نسبت درآمد به مساحت آن 5,748.84 تومان برای هر متر مربع است ."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3f24d92a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007528,
+     "end_time": "2025-05-04T06:57:49.064957",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.057429",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "نکات کلیدی:\n",
+    "\n",
+    "فروشگاه‌هایی که نسبت بالاتری از درآمد به مساحت دارند، ممکن است به دلیل وجود کالاها یا خدمات پرفروش‌تر در آن فروشگاه‌ها باشند. این فروشگاه‌ها می‌توانند فضای کمتری اشغال کرده ولی درآمد بیشتری کسب کنند.\n",
+    "\n",
+    "\n",
+    "فروشگاه‌هایی با نسبت پایین‌تر ممکن است مساحت زیادی داشته باشند ولی به ازای هر متر مربع، درآمد کمتری داشته باشند. این می‌تواند به دلیل فضای خالی، موجودی ناکافی کالا یا مشکلات در بازاریابی باشد.\n",
+    "\n",
+    "\n",
+    "به طور کلی، ستون RevToArea می‌تواند به مدیران و تحلیلگران کمک کند تا عملکرد فروشگاه‌ها را با توجه به مساحت فروشگاه‌ها مقایسه کنند و مناطقی که نیاز به بهبود دارند را شناسایی کنند."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "bd11cdee",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:49.082270Z",
+     "iopub.status.busy": "2025-05-04T06:57:49.081917Z",
+     "iopub.status.idle": "2025-05-04T06:57:49.098728Z",
+     "shell.execute_reply": "2025-05-04T06:57:49.097484Z"
+    },
+    "papermill": {
+     "duration": 0.028725,
+     "end_time": "2025-05-04T06:57:49.101409",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.072684",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>AreaStore</th>\n",
+       "      <th>Property</th>\n",
+       "      <th>Type</th>\n",
+       "      <th>Old/New</th>\n",
+       "      <th>Checkout Number</th>\n",
+       "      <th>Revenue</th>\n",
+       "      <th>RevToArea</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Store Number</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2100.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>45072000.0</td>\n",
+       "      <td>21462.857143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1290.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>7416000.0</td>\n",
+       "      <td>5748.837209</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>8592000.0</td>\n",
+       "      <td>17184.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>48415500.0</td>\n",
+       "      <td>24207.750000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>220.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>3345500.0</td>\n",
+       "      <td>15206.818182</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "              AreaStore   Property     Type Old/New  Checkout Number  \\\n",
+       "Store Number                                                           \n",
+       "1                2100.0      Owned    Hyper     New              6.0   \n",
+       "2                1290.0  Cooperate    Extra     New              5.0   \n",
+       "3                 500.0     Rental  Express     New              NaN   \n",
+       "4                2000.0      Owned    Hyper     New              9.0   \n",
+       "5                 220.0     Rental  Express     Old              2.0   \n",
+       "\n",
+       "                 Revenue     RevToArea  \n",
+       "Store Number                            \n",
+       "1             45072000.0  21462.857143  \n",
+       "2              7416000.0   5748.837209  \n",
+       "3              8592000.0  17184.000000  \n",
+       "4             48415500.0  24207.750000  \n",
+       "5              3345500.0  15206.818182  "
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.set_index('Store Number', inplace=True)\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9b59f040",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00832,
+     "end_time": "2025-05-04T06:57:49.117927",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.109607",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "📌 نکات تحلیلی مهم:\n",
+    "ایندکس‌شدن Store Number:\n",
+    "\n",
+    "مقدار گمشده (NaN) در ستون Checkout Number برای فروشگاه ۳:\n",
+    "\n",
+    "نشان می‌دهد داده ناقص داریم. برای تحلیل دقیق‌تر باید آن را مدیریت کنیم (مثلاً با میانگین جایگزین کنیم یا حذفش کنیم)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "1ef72bdb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:49.135953Z",
+     "iopub.status.busy": "2025-05-04T06:57:49.135589Z",
+     "iopub.status.idle": "2025-05-04T06:57:49.154361Z",
+     "shell.execute_reply": "2025-05-04T06:57:49.153284Z"
+    },
+    "papermill": {
+     "duration": 0.030275,
+     "end_time": "2025-05-04T06:57:49.156685",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.126410",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>AreaStore</th>\n",
+       "      <th>Property</th>\n",
+       "      <th>Type</th>\n",
+       "      <th>Old/New</th>\n",
+       "      <th>Checkout Number</th>\n",
+       "      <th>Revenue</th>\n",
+       "      <th>RevToArea</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Store Number</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2100.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.000000</td>\n",
+       "      <td>45072000.0</td>\n",
+       "      <td>21462.857143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1290.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>5.000000</td>\n",
+       "      <td>7416000.0</td>\n",
+       "      <td>5748.837209</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>4.792453</td>\n",
+       "      <td>8592000.0</td>\n",
+       "      <td>17184.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Hyper</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.000000</td>\n",
+       "      <td>48415500.0</td>\n",
+       "      <td>24207.750000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>220.0</td>\n",
+       "      <td>Rental</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>3345500.0</td>\n",
+       "      <td>15206.818182</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>114</th>\n",
+       "      <td>1800.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>9.000000</td>\n",
+       "      <td>13471000.0</td>\n",
+       "      <td>7483.888889</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>115</th>\n",
+       "      <td>1700.0</td>\n",
+       "      <td>Owned</td>\n",
+       "      <td>Extra</td>\n",
+       "      <td>New</td>\n",
+       "      <td>6.000000</td>\n",
+       "      <td>29974500.0</td>\n",
+       "      <td>17632.058824</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>116</th>\n",
+       "      <td>500.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>11031500.0</td>\n",
+       "      <td>22063.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>117</th>\n",
+       "      <td>200.0</td>\n",
+       "      <td>Rental/Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>New</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>6173500.0</td>\n",
+       "      <td>30867.500000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>118</th>\n",
+       "      <td>420.0</td>\n",
+       "      <td>Cooperate</td>\n",
+       "      <td>Express</td>\n",
+       "      <td>Old</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>10643000.0</td>\n",
+       "      <td>25340.476190</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>118 rows × 7 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "              AreaStore          Property     Type Old/New  Checkout Number  \\\n",
+       "Store Number                                                                  \n",
+       "1                2100.0             Owned    Hyper     New         6.000000   \n",
+       "2                1290.0         Cooperate    Extra     New         5.000000   \n",
+       "3                 500.0            Rental  Express     New         4.792453   \n",
+       "4                2000.0             Owned    Hyper     New         9.000000   \n",
+       "5                 220.0            Rental  Express     Old         2.000000   \n",
+       "...                 ...               ...      ...     ...              ...   \n",
+       "114              1800.0  Rental/Cooperate    Extra     New         9.000000   \n",
+       "115              1700.0            Owned     Extra     New         6.000000   \n",
+       "116               500.0  Rental/Cooperate  Express     New         2.000000   \n",
+       "117               200.0  Rental/Cooperate  Express     New         2.000000   \n",
+       "118               420.0         Cooperate  Express    Old          3.000000   \n",
+       "\n",
+       "                 Revenue     RevToArea  \n",
+       "Store Number                            \n",
+       "1             45072000.0  21462.857143  \n",
+       "2              7416000.0   5748.837209  \n",
+       "3              8592000.0  17184.000000  \n",
+       "4             48415500.0  24207.750000  \n",
+       "5              3345500.0  15206.818182  \n",
+       "...                  ...           ...  \n",
+       "114           13471000.0   7483.888889  \n",
+       "115           29974500.0  17632.058824  \n",
+       "116           11031500.0  22063.000000  \n",
+       "117            6173500.0  30867.500000  \n",
+       "118           10643000.0  25340.476190  \n",
+       "\n",
+       "[118 rows x 7 columns]"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#پر کردن مقادیر خالی این ستون با میانگین\n",
+    "df['Checkout Number'] = df['Checkout Number'].fillna(df['Checkout Number'].mean())\n",
+    "df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8d59e84f",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008464,
+     "end_time": "2025-05-04T06:57:49.173649",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.165185",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "1_درمان داده گمشده (Missing Value Imputation):\n",
+    "\n",
+    "* با جایگزینی مقدار میانگین به‌جای NaN، شما داده‌ی ناقص را به شکل عددی معتبر پر کردید\n",
+    "\n",
+    "* این روش نسبت به حذف کامل ردیف، بهتر است، چون داده را نگه می‌دارد"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d1380fd2",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008071,
+     "end_time": "2025-05-04T06:57:49.190430",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.182359",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "2_تأثیر بر تحلیل‌های آینده:\n",
+    "\n",
+    "* حالا که ستون کامل شده، می‌توانید تحلیل‌های آماری، گراف‌ها و مدل‌سازی را بدون خطای NaN انجام دهید."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ebfafd8a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008431,
+     "end_time": "2025-05-04T06:57:49.207100",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.198669",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Section 3: Data Visualization  \n",
+    "\n",
+    "9. Create a bar chart showing the distribution of store \"Type\" with matplotlib.\n",
+    "\n",
+    "10. Generate a histogram of store \"Revenue\" with seaborn."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "be806d23",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00788,
+     "end_time": "2025-05-04T06:57:49.223318",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.215438",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "بخش 3: تجسم داده ها\n",
+    "\n",
+    "یک نمودار میله ای ایجاد کنید که توزیع فروشگاه \"Type\" را با matplotlib نشان می دهد.\n",
+    "\n",
+    "یک هیستوگرام از فروشگاه \"درآمد\" با seaborn ایجاد کنید."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f014855c",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008136,
+     "end_time": "2025-05-04T06:57:49.239898",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.231762",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "d2b1185a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:49.258055Z",
+     "iopub.status.busy": "2025-05-04T06:57:49.257727Z",
+     "iopub.status.idle": "2025-05-04T06:57:49.499397Z",
+     "shell.execute_reply": "2025-05-04T06:57:49.498060Z"
+    },
+    "papermill": {
+     "duration": 0.253962,
+     "end_time": "2025-05-04T06:57:49.502118",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.248156",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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1d5+4cIF4+fnZ3r27Omw3NjYWOPr62tvP3/+vJFk3nrrrZtuEwDcTRgKBQB3AScnJz3zzDP68ssvdeHCBXv7Rx99pIcffljlypVz6B8WFqbQ0FD7+zJlyqht27b67rvvdO3aNRlj9Nlnn6lNmzYyxujMmTP2V3h4uBISErRjx45M61m+fLkkaeDAgQ7tgwYNkiQtW7bslrfR19dXkvTdd9/p0qVLtzTvtWvX9P3336tdu3a677777O0lSpRQ586dtWHDBiUmJjrM07NnTzk7O9vfr1ixQvHx8erUqZPD/nB2dla9evW0evVqSbJfL7JmzRqdP3/+lrcTAAoqggUA3CW6du2qv//+2z7MaN++fdq+fbu6dOmSrm/FihXTtVWqVEmXLl3S6dOndfr0acXHx2v69OkKCAhweEVFRUm6ftF1Zg4fPiwnJydVqFDBoT0oKEh+fn46fPjwLW9fuXLlNHDgQM2cOVPFihVTeHi4Jk+ebL++IiunT5/WpUuXHK41SVO1alWlpqbq6NGj6dZ3o/3790uSmjdvnm6ffP/99/b94e7urnHjxumbb75RYGCgGjdurPHjxys2NvaWtxkAChKusQCAu0S1atUUGhqqDz/8UF27dtWHH34oNzc3dejQ4ZaXlZqaKun63agiIyMz7FOrVq2bLsdms93yurMyYcIEdevWTUuXLtX333+vvn37asyYMdq8ebPDBda5oVChQg7v0/bJ/PnzFRQUlK6/i8v//Urt37+/2rRpoyVLlui7777TsGHDNGbMGK1atUp169bN1ToBIL8gWADAXaRr164aOHCgTp48qQULFqh169YqUqRIun5pn77f6I8//lDhwoUVEBAgSfL29ta1a9fUokWLW64jJCREqamp2r9/v8OzNeLi4hQfH6+QkJBbXmaamjVrqmbNmnr11Ve1ceNGNWjQQB988IHeeOMNSRmHmYCAABUuXFj79u1LN+3333+Xk5OTgoODs1xv2kXgxYsXz9Y+KV++vAYNGqRBgwZp//79qlOnjiZMmKAPP/wwO5sJAAUOQ6EA4C7SqVMn2Ww29evXT3/99Vemz7nYtGmTwzUSR48e1dKlS9WyZUs5OzvL2dlZ7du312effaZff/013fynT5/Oso5HH31UkvTuu+86tE+cOFGS1Lp161vZLElSYmKirl696tBWs2ZNOTk5OdzC1tPTU/Hx8Q79nJ2d1bJlSy1dutThlq9xcXFasGCBGjZsKB8fnyzXHx4eLh8fH40ePTrD2/qm7ZNLly7p8uXLDtPKly8vb29vhzoB4G7DGQsAuIsEBAQoIiJCixcvlp+fX6Z/wNeoUUPh4eEOt5uVpFGjRtn7jB07VqtXr1a9evXUs2dPVatWTefOndOOHTv0ww8/6Ny5c5nWUbt2bUVGRmr69OmKj49XkyZNtHXrVs2dO1ft2rVTs2bNbnnbVq1apd69e+upp55SpUqVdPXqVc2fP98egtKEhobqhx9+0MSJE1WyZEmVK1dO9erV0xtvvKEVK1aoYcOGevHFF+Xi4qJp06YpOTlZ48ePv+n6fXx8NHXqVHXp0kX333+/OnbsqICAAB05ckTLli1TgwYN9L///U9//PGHHnnkEXXo0EHVqlWTi4uLvvjiC8XFxaljx463vN0AUGDk9W2pAAC37p+3m73RokWLjCTTq1evDKdLMtHR0ebDDz80FStWNO7u7qZu3bpm9erV6frGxcWZ6OhoExwcbFxdXU1QUJB55JFHzPTp029a45UrV8yoUaNMuXLljKurqwkODjZDhw41ly9fduiX3dvN/vXXX+a5554z5cuXNx4eHsbf3980a9bM/PDDDw79fv/9d9O4cWNTqFAhI8nh1rM7duww4eHhxsvLyxQuXNg0a9bMbNy40WH+tNvN/vTTTxnWsXr1ahMeHm58fX2Nh4eHKV++vOnWrZv99r1nzpwx0dHRpkqVKsbT09P4+vqaevXqmUWLFt10GwGgILMZY0yeJhsAQK5aunSp2rVrp3Xr1qlRo0bppttsNkVHR+t///tfHlQHALhbcY0FANxlZsyYofvuu08NGzbM61IAAPcQrrEAgLvEJ598op9//lnLli3TpEmTcv1WrwAAZIVgAQB3iU6dOsnLy0vdu3fXiy++mNflAADuMVxjAQAAAMAyrrEAAAAAYBnBAgAAAIBlBAsAAAAAlhEsAAAAAFhGsAAAAABgGcECAAAAgGUECwAAAACWESwAAAAAWEawAAAAAGDZ/weyT6dF2Li9gwAAAABJRU5ErkJggg==",
+      "text/plain": [
+       "<Figure size 800x600 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# محاسبه تعداد هر نوع فروشگاه\n",
+    "type_counts = df['Type'].value_counts()\n",
+    "\n",
+    "# رسم نمودار میله‌ای\n",
+    "plt.figure(figsize=(8, 6))\n",
+    "plt.bar(type_counts.index, type_counts.values, color='skyblue')\n",
+    "\n",
+    "# عنوان و برچسب‌ها\n",
+    "plt.title('Distribution of types of stores (Store Type)', fontsize=14)\n",
+    "plt.xlabel('Type of stores', fontsize=12)\n",
+    "plt.ylabel('number', fontsize=12)\n",
+    "\n",
+    "# نمایش نمودار\n",
+    "plt.tight_layout()\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f3817d0b",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008627,
+     "end_time": "2025-05-04T06:57:49.519764",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.511137",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "این نمودار نشان می‌دهد که:\n",
+    "\n",
+    "فروشگاه‌های Express بیشترین تعداد را دارند.\n",
+    "\n",
+    "فروشگاه‌های Extra در رتبه دوم قرار دارند.\n",
+    "\n",
+    "فروشگاه‌های Hyper کمترین تعداد را دارند."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "1fbd3cd0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:49.539922Z",
+     "iopub.status.busy": "2025-05-04T06:57:49.539544Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.751345Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.750126Z"
+    },
+    "papermill": {
+     "duration": 2.224854,
+     "end_time": "2025-05-04T06:57:51.753774",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:49.528920",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/opt/conda/lib/python3.10/site-packages/seaborn/_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.\n",
+      "  with pd.option_context('mode.use_inf_as_na', True):\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAA90AAAJOCAYAAACqS2TfAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjcuNSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/xnp5ZAAAACXBIWXMAAA9hAAAPYQGoP6dpAACDcklEQVR4nOzdd3wUdeLG8Wd300N6IwlJgJDQu4BIR6QI2BVRELErnqf8vKKeAncnnl7zVPSsWBGwgIpYACkWioD0hJpCgPSEkN7m9wdmz0gCIWQzKZ/367WvZGdmJ8/sjjEP850Zi2EYhgAAAAAAQIOzmh0AAAAAAICWitINAAAAAICDULoBAAAAAHAQSjcAAAAAAA5C6QYAAAAAwEEo3QAAAAAAOAilGwAAAAAAB6F0AwAAAADgIJRuAAAAAAAchNINAAAAAICDULoBoBGsW7dOFotFc+fONeXnt2/fXu3bt682be7cubJYLFq3bp0pmRITE2WxWHTrrbea8vMbQllZmebOnauYmBi5urrKYrFo+fLlZscyTUv4TM30008/yWazadGiRWZHadFee+012Ww27d692+woAFoJSjcA1FFVofjlw8PDQ2FhYbr00kv1xBNP6PDhww752SNHjpTFYnHIuh2pprLfkvzzn//UvHnzFBYWpocfflhz5sxRly5dGmTdLf29w5lmz56tLl266MYbb6w2/de/d5ycnBQSEqJJkyZp9erVJqVtvmbMmKGoqCj97ne/MzsKgFbCyewAANDcREdHa9q0aZKkkpISpaena8uWLfrLX/6i+fPn6/e//72efPLJaiV54MCBiouLU2BgoCmZ16xZY8rPPZvw8HDFxcXJx8fH7Cj1tmLFCrVp00arVq2Si4uL2XFM1xI+U7N88803WrdunV5//XVZrWceEwkICND9998vSSouLtbevXv1+eef6/PPP9eiRYs0derUxo7cbDk7O+uhhx7SAw88oO+//15DhgwxOxKAFo7SDQDnqVOnTjUOE//uu+80ffp0PfXUU7LZbPrLX/5in+fh4dFgR0DrIzo62rSfXRtnZ2dT35OGcPz4cQUEBFC4f9YSPlOzvPTSS3J3d9d1111X4/zAwMAzfu8sXrxYU6dO1SOPPELpPk833nijZs+erf/+97+UbgAOx/ByAGggQ4cO1ZdffilXV1c988wzOnr0qH1ebed0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atCgQXr//fe1ZMmSM+ZXVlZq/fr1dVpX1VHhzZs3n1cGi8Viv3De448/bp9en8/T2dlZU6ZMUXJysp555hkdPHhQ11577RkXsrvyyisVGRmpf/3rX/Z/1PilsrIyfffdd+e1Hb82YMAAlZWVVRvCbhiGHnnkkRq3p777b9X7fSFH5QGgLjinGwDO06FDh+wXECotLVV6erq2bNmi3bt3y2az6U9/+lO1+2nX5p133tHLL7+s4cOHKzo6Wt7e3tq3b59Wrlwpf3//aleZHj16tD788ENde+21mjBhgtzc3NS7d29Nnjz5grdn3LhxGjx4sG688UYFBQVpzZo12rp1qy6++OJq9xl3cXHRb37zG82fP1/9+vXTlVdeqVOnTumzzz7TiBEjdPjw4TPWPXr0aG3dulUTJkzQsGHD5OLiouHDh2v48OG15nnppZc0dOhQ3Xnnnfrss8/UrVs37d27V59++qmCgoLOuFJzQxk+fLh+85vf6Pnnn1ePHj107bXXyjAMffTRR0pJSdEDDzxw1tx18fTTT2vt2rUaPny4OnToIDc3N23fvl1r1qxRx44dq42OONt719BZ7777bm3atElvvfWWvv/+e40ZM0ZhYWFKS0tTfHy8Nm/erEWLFql9+/YXtP11de+992r9+vVaunSpYmJidMUVV8jb21vJycn66quv9Prrr+uqq66SZN7+Ip2+IvaoUaN044036tlnn1W/fv3k7u6u5ORkbdy4URkZGXX6B6devXqpY8eO1UY61NUVV1yh/v3765tvvtH69es1YsSIen+e06dP14svvqgnnnjC/vzXXF1d9eGHH2rChAkaMWKERo8erZ49e8pisSgpKUnffvutAgICLujCe/fff78WLlyoO+64Q6tWrVJQUJC+/fZb5ebmqnfv3tWuIi/Vb/81DENr1qxR165da7yPOwA0qIa+BxkAtFS/vB921cPd3d0IDQ01Ro0aZTz++OPGoUOHanxtTfe43rRpk3H33XcbPXr0MHx9fQ13d3cjJibGuP/++42kpKRqry8rKzN+//vfG5GRkYaTk1O1eyHXdm/kXzrbfbrXrl1rvPrqq0b37t0NV1dXIzQ01Pjtb39r5OXlnbGeiooKY+7cuUZERITh4uJixMbGGv/5z3+MI0eO1Jjh1KlTxp133mmEhoYaNput2ntwttyJiYnGzJkzjdDQ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/vnnGjBgQMMkBAAAAACgmapX6b7sssu0fft2rVq1Sr6+vpoyZYp9Xk5OjoYPH64rr7yywUICAAAAANAc1fs+3d26dVO3bt3OmO7n56d///vfFxQKAAAAAICWoN6lW5I2bdqktWvXKj09Xffdd59iYmJUWFio+Ph4xcbGqk2bNg2VEwAAAACAZqdeF1IrLS3VNddcoyFDhuixxx7Tc889p6NHj55eodWqsWPH6j//+U+DBgUAAAAAoLmpV+l+/PHHtWLFCr300kvav3+/DMOwz3Nzc9P111+vTz75pMFCAgAAAADQHNWrdL///vu69957ddddd8nf3/+M+V27dtWRI0cuOBwAAAAAAM1ZvUp3enq6evbsWet8m82mwsLCeocCAAAAAKAlqFfpjoiIUHx8fK3zv//+e3Xq1KneoQAAAAAAaAnqVbpvuukmvfzyy9q4caN9msVikSS9+uqrWrp0qW655ZaGSQgAAAAAQDNVr1uGPfbYY9q0aZOGDx+url27ymKx6KGHHlJ2drZSUlJ0+eWX66GHHmrorAAAAAAANCv1OtLt4uKiL7/8UgsXLlTHjh3VpUsXlZSUqFevXnrzzTf12WefyWazNXRWAAAAAACalfM+0l1UVKTHHntMo0aN0rRp0zRt2jRH5AIAAAAAoNk77yPd7u7uevnll5WWluaIPAAAAAAAtBj1Gl7ev39/7dmzp6GzAAAAAADQotSrdD/77LNavHixXnvtNZWXlzd0JgAAAAAAWoR6Xb381ltvldVq1d13360HHnhA4eHhcnd3r7aMxWLRzp07GyQkAAAAAADNUb1Kt7+/vwICAtS5c+eGzgMAAAAAQItRr9K9bt26Bo4BAAAAAEDLU69zugEAAAAAwLnV60i3JFVUVOjdd9/V559/rqSkJElSVFSUJk2apJtvvlk2m63BQgIAAAAA0BzV60j3yZMnNWTIEN122236+uuvVVZWprKyMq1atUozZ87U0KFDlZeX19BZAQAAAABoVupVuh977DFt27ZNzz//vDIyMrR9+3Zt375d6enpeuGFF7R161Y99thjDZ0VAAAAAIBmpV6le9myZbrvvvt03333ydnZ2T7d2dlZ9957r+6991599NFHDRYSAAAAAIDmqF6lOysr66y3C+vSpYuys7PrHQoAAAAAgJagXqW7U6dO+vTTT2ud/+mnnyo6Orre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4+rqKldX12rTfH19HZbR29u7Se8YQBX2VTQX7KtoLthX0Vywr6K5aA77qo+PzzmXaValW5Jmz56tGTNm6KKLLtLAgQP17LPPqqCgQDNnzjQ7GgAAAAAA1TS70j1lyhRlZGToiSeeUGpqqvr06aMvv/zyjIurAQAAAABgtmZXuiXp/vvvr3U4uVlcXV01Z86cM4ayA00N+yqaC/ZVNBfsq2gu2FfRXLS0fbVZXb0cAAAAAIDmxGp2AAAAAAAAWipKNwAAAAAADkLpBgAAAADAQSjd52HBggVq37693NzcNGjQIG3ZsuWsy3/wwQfq0qWL3Nzc1LNnT61cubKRkqK1O5999dVXX9WwYcPk5+cnPz8/jRkz5pz7NtBQzvf3apXFixfLYrHoqquucmxAQOe/n+bm5mrWrFkKDQ2Vq6urYmNj+RsAjeJ899Vnn31WnTt3lru7uyIiIvTQQw+puLi4kdKitdqwYYMmT56ssLAwWSwWLV++/JyvWbdunfr16ydXV1d16tRJb775psNzNiRKdx0tWbJEs2fP1pw5c7R9+3b17t1b48aNU3p6eo3L//DDD5o6dapuv/12/fTTT7rqqqt01VVXac+ePY2cHK3N+e6r69at09SpU7V27Vpt3LhRERERGjt2rI4dO9bIydHanO++WiUxMVEPP/ywhg0b1khJ0Zqd735aWlqqyy67TImJifrwww+1f/9+vfrqqwoPD2/k5GhtzndfXbRokf74xz9qzpw5iouL0+uvv64lS5bo0UcfbeTkaG0KCgrUu3dvLViwoE7LJyQkaOLEiRo1apR27NihBx98UHfccYe++uorBydtQAbqZODAgcasWbPszysqKoywsDDjqaeeqnH5G264wZg4cWK1aYMGDTLuvvtuh+YEzndf/bXy8nLDy8vLeOuttxwVETAMo377anl5uXHJJZcYr732mjFjxgzjyiuvbISkaM3Odz996aWXjI4dOxqlpaWNFREwDOP899VZs2YZo0ePrjZt9uzZxpAhQxyaE/glScayZcvOuszvf/97o3v37tWmTZkyxRg3bpwDkzUsjnTXQWlpqbZt26YxY8bYp1mtVo0ZM0YbN26s8TUbN26strwkjRs3rtblgYZQn3311woLC1VWViZ/f39HxQTqva/++c9/VnBwsG6//fbGiIlWrj776aeffqrBgwdr1qxZCgkJ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",
+      "text/plain": [
+       "<Figure size 1000x600 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# رسم هیستوگرام درآمد فروشگاه‌ها\n",
+    "plt.figure(figsize=(10, 6))\n",
+    "sns.histplot(data=df, x='Revenue', bins=20, kde=True, color='green')\n",
+    "\n",
+    "# عنوان و برچسب‌ها\n",
+    "plt.title('Distribution of store income (Revenue)', fontsize=14)\n",
+    "plt.xlabel('income', fontsize=12)\n",
+    "plt.ylabel('Number of stores', fontsize=12)\n",
+    "\n",
+    "# نمایش نمودار\n",
+    "plt.tight_layout()\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d3565e78",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009337,
+     "end_time": "2025-05-04T06:57:51.773541",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.764204",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "* عنوان: توزیع درآمد فروشگاه‌ها\n",
+    "\n",
+    "* محور X: درآمد (Revenue)\n",
+    "\n",
+    "* محور Y: فراوانی (Frequency)\n",
+    "\n",
+    "* هیستوگرام: بیشتر فروشگاه‌ها دارای درآمد پایین‌تری هستند، و فراوانی با افزایش درآمد کاهش می‌یابد.\n",
+    "\n",
+    "* توزیع skewed راست: نشان می‌دهد که تعداد کمی از فروشگاه‌ها دارای درآمد بسیار بالایی هستند."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "90f98e39",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009695,
+     "end_time": "2025-05-04T06:57:51.793054",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.783359",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Section 4: Data Analysis  \n",
+    "\n",
+    "12. Compare \"AreaStore\" values for \"Store Numbers\" 5 and 117, and print which one is greater than. *(hint: uisng .loc)*\n",
+    "\n",
+    "13. Write a **function** to get \"Store Numbers\" and numeric features name, then compare values and print which one is greater than.\n",
+    "\n",
+    "15. Determine the most common \"Property\" type among the stores.   \n",
+    "\n",
+    "14. Identify the store with the highest \"Revenue\" per square meter of \"AreaStore\".  \n",
+    "\n",
+    "16. Write a **function** to find and return the top N stores with the highest \"Revenue\" in number K stores. Allow the user to specify the number N and K as an argument. (N <= K)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "c0cc3637",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:51.816306Z",
+     "iopub.status.busy": "2025-05-04T06:57:51.815846Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.825577Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.824225Z"
+    },
+    "papermill": {
+     "duration": 0.023587,
+     "end_time": "2025-05-04T06:57:51.827885",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.804298",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Store Number 5 has a greater AreaStore: 220.0\n",
+      "==================================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "# مقایسه مقادیر AreaStore برای Store Numbers 5 و 117\n",
+    "\n",
+    "area_store_5 = df.loc[5, 'AreaStore']\n",
+    "area_store_117 = df.loc[117, 'AreaStore']\n",
+    "\n",
+    "if area_store_5 > area_store_117:\n",
+    "    print('Store Number 5 has a greater AreaStore:', area_store_5)\n",
+    "else:\n",
+    "    print('Store Number 117 has a greater AreaStore:', area_store_117)\n",
+    "\n",
+    "print(50 * \"=\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "4515d954",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:51.853440Z",
+     "iopub.status.busy": "2025-05-04T06:57:51.853054Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.861692Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.860280Z"
+    },
+    "papermill": {
+     "duration": 0.025146,
+     "end_time": "2025-05-04T06:57:51.864568",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.839422",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "amount 'AreaStore' for the store 5: 220.0\n",
+      "amount 'AreaStore' for the store 117: 200.0\n",
+      "➔ store 5 Much more in the feature 'AreaStore' has.\n"
+     ]
+    }
+   ],
+   "source": [
+    "def compare_numeric_feature(df, store_num1, store_num2, feature_name):\n",
+    "    try:\n",
+    "        # دریافت مقدار ویژگی برای هر فروشگاه\n",
+    "        value1 = df.loc[store_num1, feature_name]\n",
+    "        value2 = df.loc[store_num2, feature_name]\n",
+    "        \n",
+    "        # چاپ مقدار هر فروشگاه\n",
+    "        print(f\"amount '{feature_name}' for the store {store_num1}: {value1}\")\n",
+    "        print(f\"amount '{feature_name}' for the store {store_num2}: {value2}\")\n",
+    "        \n",
+    "        # مقایسه مقادیر\n",
+    "        if value1 > value2:\n",
+    "            print(f\"➔ store {store_num1} Much more in the feature '{feature_name}' has.\")\n",
+    "        elif value1 < value2:\n",
+    "            print(f\"➔ store {store_num2} Much more in the feature '{feature_name}' has.\")\n",
+    "        else:\n",
+    "            print(f\"➔ attribute value '{feature_name}' It is the same in both stores..\")\n",
+    "    \n",
+    "    except KeyError as e:\n",
+    "        print(f\"Error: The entered column or store number does not exist! ({e})\")\n",
+    "\n",
+    "\n",
+    "compare_numeric_feature(df, 5, 117, 'AreaStore')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "80c3dd13",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:51.887160Z",
+     "iopub.status.busy": "2025-05-04T06:57:51.886797Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.895681Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.894377Z"
+    },
+    "papermill": {
+     "duration": 0.023121,
+     "end_time": "2025-05-04T06:57:51.898242",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.875121",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The most common type of property among stores: Owned with the number 39 store\n"
+     ]
+    }
+   ],
+   "source": [
+    "# شمارش تعداد هر نوع Property\n",
+    "property_counts = df['Property'].value_counts()\n",
+    "\n",
+    "# استخراج رایج‌ترین نوع\n",
+    "most_common_property = property_counts.idxmax()\n",
+    "most_common_count = property_counts.max()\n",
+    "\n",
+    "print(f\"The most common type of property among stores: {most_common_property} with the number {most_common_count} store\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "ec4d3ad1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:51.920266Z",
+     "iopub.status.busy": "2025-05-04T06:57:51.919871Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.927681Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.926519Z"
+    },
+    "papermill": {
+     "duration": 0.021563,
+     "end_time": "2025-05-04T06:57:51.929988",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.908425",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Store number 53 The highest income per square meter of 'AreaStore' with the amount 110817.07 has.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# محاسبه نسبت درآمد به مساحت برای هر فروشگاه\n",
+    "df['RevenuePerArea'] = df['Revenue'] / df['AreaStore']\n",
+    "\n",
+    "# پیدا کردن ایندکس فروشگاهی که بیشترین مقدار را دارد\n",
+    "store_with_highest_revenue_per_area = df['RevenuePerArea'].idxmax()\n",
+    "\n",
+    "# استخراج شماره فروشگاه از ایندکس\n",
+    "store_number = store_with_highest_revenue_per_area\n",
+    "\n",
+    "# استخراج مقدار بیشترین درآمد به ازای مساحت\n",
+    "highest_revenue_per_area = df.loc[store_number, 'RevenuePerArea']\n",
+    "\n",
+    "print(f\"Store number {store_number} The highest income per square meter of 'AreaStore' with the amount {highest_revenue_per_area:.2f} has.\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "773b8225",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:51.951771Z",
+     "iopub.status.busy": "2025-05-04T06:57:51.951350Z",
+     "iopub.status.idle": "2025-05-04T06:57:51.966841Z",
+     "shell.execute_reply": "2025-05-04T06:57:51.965399Z"
+    },
+    "papermill": {
+     "duration": 0.029438,
+     "end_time": "2025-05-04T06:57:51.969491",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.940053",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "              AreaStore          Property   Type Old/New  Checkout Number  \\\n",
+      "Store Number                                                                \n",
+      "44               5600.0             Owned  Hyper     New        14.000000   \n",
+      "86               2400.0             Owned  Hyper     New        10.000000   \n",
+      "33               3000.0             Owned  Hyper     New        11.000000   \n",
+      "35               1750.0             Owned  Extra     New         9.000000   \n",
+      "46               1800.0  Rental/Cooperate  Extra     New         4.792453   \n",
+      "\n",
+      "                  Revenue     RevToArea  RevenuePerArea  \n",
+      "Store Number                                             \n",
+      "44            100083000.0  17871.964286    17871.964286  \n",
+      "86             97408000.0  40586.666667    40586.666667  \n",
+      "33             77139500.0  25713.166667    25713.166667  \n",
+      "35             75874500.0  43356.857143    43356.857143  \n",
+      "46             67093000.0  37273.888889    37273.888889  \n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "def top_n_stores_by_revenue(df, N, K):\n",
+    "    \"\"\"\n",
+    "    Function to find and return the top N stores with the highest 'Revenue' \n",
+    "    from the top K stores.\n",
+    "    \n",
+    "    Parameters:\n",
+    "    - df: DataFrame containing the stores data.\n",
+    "    - N: The number of top stores to return (N <= K).\n",
+    "    - K: The number of stores to consider (K can be more than or equal to N).\n",
+    "    \n",
+    "    Returns:\n",
+    "    - A DataFrame containing the top N stores with the highest 'Revenue'.\n",
+    "    \"\"\"\n",
+    "    \n",
+    "    if N > K:\n",
+    "        raise ValueError(\"N must be less than or equal to K.\")\n",
+    "    \n",
+    "    # Select the top K stores based on 'Revenue'\n",
+    "    top_k_stores = df.nlargest(K, 'Revenue')\n",
+    "    \n",
+    "    # Get the top N stores from the top K stores\n",
+    "    top_n_stores = top_k_stores.head(N)\n",
+    "    \n",
+    "    return top_n_stores\n",
+    "\n",
+    "# Example of usage\n",
+    "# Assuming df is your DataFrame\n",
+    "N = 5  # The number of top stores you want to return\n",
+    "K = 10  # The number of stores to consider\n",
+    "top_stores = top_n_stores_by_revenue(df, N, K)\n",
+    "print(top_stores)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "df24e087",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009787,
+     "end_time": "2025-05-04T06:57:51.989665",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.979878",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Section 5: Bonus Challenge (Advanced) --Optional \n",
+    "\n",
+    "17. Use Scikit-Learn to perform test and trian split dataset.  \n",
+    "\n",
+    "18. Use Scikit-Learn to resclale numerical data for modeling. \n",
+    "\n",
+    "19. Use Scikit-Learn to perform linear regression to predict store \"Revenue\", based on **numerical features**.  \n",
+    "\n",
+    "20. Use Scikit-Learn to evaluate model with **R square** metric."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "a4da7a29",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:52.012191Z",
+     "iopub.status.busy": "2025-05-04T06:57:52.011837Z",
+     "iopub.status.idle": "2025-05-04T06:57:52.353615Z",
+     "shell.execute_reply": "2025-05-04T06:57:52.352242Z"
+    },
+    "papermill": {
+     "duration": 0.356655,
+     "end_time": "2025-05-04T06:57:52.356476",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:51.999821",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "شکل X_train: (94, 7)\n",
+      "شکل X_test: (24, 7)\n",
+      "شکل y_train: (94,)\n",
+      "شکل y_test: (24,)\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.model_selection import train_test_split\n",
+    "\n",
+    "# فرض می‌کنیم df دیتافریم شماست\n",
+    "\n",
+    "# تقسیم ویژگی‌ها (X) و برچسب‌ها (y)\n",
+    "# به عنوان مثال فرض کنیم می‌خواهیم 'Revenue' را پیش‌بینی کنیم\n",
+    "X = df.drop(columns=['Revenue'])  # همه ستون‌ها به جز Revenue ویژگی‌ها هستند\n",
+    "y = df['Revenue']                 # ستون Revenue برچسب ماست\n",
+    "\n",
+    "# تقسیم داده‌ها به داده‌های آموزش و تست\n",
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n",
+    "\n",
+    "# نمایش شکل داده‌ها\n",
+    "print(\"شکل X_train:\", X_train.shape)\n",
+    "print(\"شکل X_test:\", X_test.shape)\n",
+    "print(\"شکل y_train:\", y_train.shape)\n",
+    "print(\"شکل y_test:\", y_test.shape)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "044af817",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:52.378887Z",
+     "iopub.status.busy": "2025-05-04T06:57:52.378510Z",
+     "iopub.status.idle": "2025-05-04T06:57:52.400608Z",
+     "shell.execute_reply": "2025-05-04T06:57:52.399186Z"
+    },
+    "papermill": {
+     "duration": 0.036272,
+     "end_time": "2025-05-04T06:57:52.403019",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:52.366747",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "              AreaStore    Property     Type Old/New  Checkout Number  \\\n",
+      "Store Number                                                            \n",
+      "45                800.0   Cooperate  Express     New         4.000000   \n",
+      "13               4800.0  Cooperate     Hyper     New         4.792453   \n",
+      "16                488.0      Rental  Express     New         2.000000   \n",
+      "71                400.0      Rental  Express     New         2.000000   \n",
+      "108               420.0   Cooperate  Express    Old          3.000000   \n",
+      "\n",
+      "              RevToArea  RevenuePerArea  \n",
+      "Store Number                             \n",
+      "45            -0.345645       -0.345645  \n",
+      "13            -0.700669       -0.700669  \n",
+      "16            -0.832849       -0.832849  \n",
+      "71             0.561235        0.561235  \n",
+      "108            0.241928        0.241928  \n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.preprocessing import StandardScaler\n",
+    "\n",
+    "# فرض می‌کنیم X همان ویژگی‌های عددی ماست\n",
+    "# اگر همه ستون‌های X عددی نباشند، باید فقط ستون‌های عددی را انتخاب کنیم\n",
+    "numeric_columns = X.select_dtypes(include=['float64', 'int64']).columns\n",
+    "\n",
+    "# ایجاد یک شی از StandardScaler\n",
+    "scaler = StandardScaler()\n",
+    "\n",
+    "# فیت و ترنسفورم روی داده‌های آموزشی\n",
+    "X_train_scaled = X_train.copy()\n",
+    "X_train_scaled[numeric_columns] = scaler.fit_transform(X_train[numeric_columns])\n",
+    "\n",
+    "# فقط ترنسفورم روی داده‌های تست (بدون فیت مجدد)\n",
+    "X_test_scaled = X_test.copy()\n",
+    "X_test_scaled[numeric_columns] = scaler.transform(X_test[numeric_columns])\n",
+    "\n",
+    "# مشاهده خروجی\n",
+    "print(X_train_scaled.head())\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "df392ff6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:52.426686Z",
+     "iopub.status.busy": "2025-05-04T06:57:52.426266Z",
+     "iopub.status.idle": "2025-05-04T06:57:52.564155Z",
+     "shell.execute_reply": "2025-05-04T06:57:52.562774Z"
+    },
+    "papermill": {
+     "duration": 0.153086,
+     "end_time": "2025-05-04T06:57:52.566941",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:52.413855",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The model on the test data has R^2 equal to: 0.6262\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.linear_model import LinearRegression\n",
+    "from sklearn.preprocessing import StandardScaler\n",
+    "\n",
+    "# فرض می‌کنیم df دیتافریم اصلی شماست.\n",
+    "\n",
+    "# --- 1. انتخاب ویژگی‌های عددی\n",
+    "numerical_features = ['AreaStore', 'Checkout Number', 'RevToArea', 'RevenuePerArea']\n",
+    "\n",
+    "X = df[numerical_features]  # ویژگی‌ها (Features)\n",
+    "y = df['Revenue']           # هدف (Target)\n",
+    "\n",
+    "# --- 2. تقسیم داده به داده‌های آموزش و تست\n",
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n",
+    "\n",
+    "# --- 3. اعمال استانداردسازی (StandardScaler)\n",
+    "scaler = StandardScaler()\n",
+    "X_train_scaled = scaler.fit_transform(X_train)\n",
+    "X_test_scaled = scaler.transform(X_test)\n",
+    "\n",
+    "# --- 4. ساخت و آموزش مدل رگرسیون خطی\n",
+    "model = LinearRegression()\n",
+    "model.fit(X_train_scaled, y_train)\n",
+    "\n",
+    "# --- 5. پیش‌بینی روی داده‌های تست\n",
+    "y_pred = model.predict(X_test_scaled)\n",
+    "\n",
+    "# --- 6. ارزیابی مدل (اختیاری - مثلا محاسبه R^2)\n",
+    "r2_score = model.score(X_test_scaled, y_test)\n",
+    "print(f\"The model on the test data has R^2 equal to: {r2_score:.4f}\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "1b57952a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-05-04T06:57:52.589825Z",
+     "iopub.status.busy": "2025-05-04T06:57:52.589451Z",
+     "iopub.status.idle": "2025-05-04T06:57:52.600958Z",
+     "shell.execute_reply": "2025-05-04T06:57:52.598924Z"
+    },
+    "papermill": {
+     "duration": 0.026027,
+     "end_time": "2025-05-04T06:57:52.603631",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:52.577604",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "R square: 0.6261995346119142\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import r2_score\n",
+    "\n",
+    "# ارزیابی مدل با استفاده از متریک R square\n",
+    "r2 = r2_score(y_test, y_pred)\n",
+    "print('R square:', r2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4e3f44ce",
+   "metadata": {
+    "papermill": {
+     "duration": 0.010832,
+     "end_time": "2025-05-04T06:57:52.625108",
+     "exception": false,
+     "start_time": "2025-05-04T06:57:52.614276",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Good luck!"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 3887287,
+     "sourceId": 6764170,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30698,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 9.202073,
+   "end_time": "2025-05-04T06:57:53.257657",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2025-05-04T06:57:44.055584",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
